@@ -1,0 +1,35 @@
+# Skycaptain: Daggerverse
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+repos:
+  # Common -----------------------------------------------------------------------------------------
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v4.5.0"
+    hooks:
+      - id: check-added-large-files
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
+  - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
+    rev: "2.7.3"
+    hooks:
+      - id: editorconfig-checker
+
+  # Python -----------------------------------------------------------------------------------------
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "v0.3.2"
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: "v1.9.0"
+    hooks:
+      - id: mypy
+        # TODO: See https://github.com/python/mypy/issues/10428 and https://github.com/python/mypy/issues/4008
+        exclude: "main.py$"
+        additional_dependencies:
+          - "dagger-io"
