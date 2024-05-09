@@ -1,3 +1,20 @@
-[project]
+# Skycaptain: Daggerverse
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
 name = "main"
-version = "0.0.0"
+version = "1.0.0"
+description = ""
+authors = []
+license = "BSD-3-Clause"
+
+[tool.poetry.dependencies]
+python = "^3.10"  # dagger-io requires at least Python 3.10
+
+[tool.poetry.group.dev.dependencies]
+dagger-io = {path = "sdk", develop = true}
