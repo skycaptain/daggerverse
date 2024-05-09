@@ -1,6 +1,6 @@
 {
   "name": "pre-commit",
   "sdk": "python",
-  "source": "dagger",
-  "engineVersion": "v0.10.2"
+  "source": ".",
+  "engineVersion": "v0.11.3"
 }
