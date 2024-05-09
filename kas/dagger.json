@@ -1,0 +1,6 @@
+{
+  "name": "kas",
+  "sdk": "python",
+  "source": ".",
+  "engineVersion": "v0.11.3"
+}
