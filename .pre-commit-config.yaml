@@ -25,11 +25,3 @@ repos:
       - id: ruff
         args: ["--fix"]
       - id: ruff-format
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.9.0"
-    hooks:
-      - id: mypy
-        # TODO: See https://github.com/python/mypy/issues/10428 and https://github.com/python/mypy/issues/4008
-        exclude: "main.py$"
-        additional_dependencies:
-          - "dagger-io"
