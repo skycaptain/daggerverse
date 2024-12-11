@@ -6,30 +6,30 @@ repos:
   # Common -----------------------------------------------------------------------------------------
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: "v4.6.0"
+    rev: "v5.0.0"
     hooks:
       - id: check-added-large-files
       - id: check-executables-have-shebangs
       - id: check-shebang-scripts-are-executable
       - id: check-symlinks
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: "2.7.3"
+    rev: "3.1.2"
     hooks:
       - id: editorconfig-checker
 
   # Python -----------------------------------------------------------------------------------------
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.4.3"
+    rev: "v0.9.2"
     hooks:
       - id: ruff
         args: ["--fix"]
       - id: ruff-format
 
-  # JSON, YAML, TOML -------------------------------------------------------------------------------
+  # JSON, YAML, JavaScript -------------------------------------------------------------------------
 
   - repo: https://github.com/biomejs/pre-commit
-    rev: "v0.6.0"
+    rev: "v0.6.1"
     hooks:
       - id: biome-ci
         additional_dependencies: ["@biomejs/biome"]
