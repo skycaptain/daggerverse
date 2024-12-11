@@ -1,7 +1,0 @@
-// Skycaptain: Daggerverse
-//
-// SPDX-License-Identifier: BSD-3-Clause
-//
-{
-  "python.analysis.extraPaths": ["./sdk/src"]
-}
