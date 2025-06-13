@@ -27,7 +27,7 @@
       "description": "Update `*_IMAGE_REF` constants in Python and Golang files",
       "customType": "regex",
       "datasourceTemplate": "docker",
-      "managerFilePatterns": ["/.+\\.py$/", "/.+\\.go$/"],
+      "matchFileNames": ["**/*.py", "**/*.go"],
       "matchStrings": [
         "[A-Za-z0-9_]+?_IMAGE_REF\\s*=\\s*[\"'](?<depName>.*?):(?<currentValue>.*?)(@(?<currentDigest>sha256:[a-f0-9]{64}))?[\"']?\\s"
       ],
