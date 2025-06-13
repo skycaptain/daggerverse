@@ -18,10 +18,10 @@ jobs:
           - kas
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Setup Dagger
-        uses: dagger/dagger-for-github@8.0.0
+        uses: dagger/dagger-for-github@e47aba410ef9bb9ed81a4d2a97df31061e5e842e # 8.0.0
         with:
           # TODO: Add renovate configuration to update this version
           version: "v0.18.10"
