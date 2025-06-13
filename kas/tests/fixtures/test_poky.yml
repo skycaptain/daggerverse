@@ -1,0 +1,21 @@
+# Skycaptain: Daggerverse
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+---
+header:
+  version: 16
+
+machine: qemux86-64
+distro: poky
+
+repos:
+  poky:
+    url: https://git.yoctoproject.org/poky.git
+    tag: scarthgap-5.0.10
+    commit: ac257900c33754957b2696529682029d997a8f28
+    layers:
+      meta:
+      meta-poky:
+      meta-yocto-bsp:
+      meta-selftest:
