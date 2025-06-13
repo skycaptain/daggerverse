@@ -3,8 +3,8 @@
   "extends": [
     "config:best-practices",
     "customManagers:biomeVersions",
-    "github>skycpatain/daggerverse//.renovate/dagger.json",
-    "github>skycpatain/daggerverse//.renovate/pre-commit.json"
+    "github>skycaptain/daggerverse//.renovate/dagger.json",
+    "github>skycaptain/daggerverse//.renovate/pre-commit.json"
   ],
   "rebaseWhen": "conflicted"
 }
