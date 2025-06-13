@@ -75,7 +75,7 @@ class Tests:
     @function
     async def test_build(self):
         src = self.get_src()
-        build_dir = dag.kas().build(src, config=["test_poky.yml"], target="selftest-hello")
+        build_dir = dag.kas().build(src, config=["test_poky.yml"])
 
         entries = await build_dir.entries()
 
@@ -84,7 +84,7 @@ class Tests:
     @function
     async def test_shell(self):
         src = self.get_src()
-        ctr = await dag.kas().shell(src, config=["test_poky.yml"], command=["ls"])
+        ctr = await dag.kas().shell(src, config=["test_poky.yml"], command="ls")
 
         # Check if the command executed successfully
         actual_result = await ctr.stdout()

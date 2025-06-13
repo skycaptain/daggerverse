@@ -9,7 +9,10 @@ header:
 machine: qemux86-64
 distro: poky
 
+target: test-daggerverse-minimal
+
 repos:
+  this:
   poky:
     url: https://git.yoctoproject.org/poky.git
     tag: scarthgap-5.0.10
