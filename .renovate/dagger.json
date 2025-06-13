@@ -8,6 +8,16 @@
       "depNameTemplate": "ghcr.io/dagger/engine",
       "managerFilePatterns": ["/dagger\\.json$/"],
       "matchStrings": ["\\s*[\"']engineVersion[\"']:\\s*[\"'](?<currentValue>.*)[\"'],?\\s"]
+    },
+    {
+      "description": "Update `*_IMAGE_REF` constants in Python and Golang files",
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "managerFilePatterns": ["/.+\\.py$/", "/.+\\.go$/"],
+      "matchStrings": [
+        "[A-Za-z0-9_]+?_IMAGE_REF\\s*=\\s*[\"'](?<depName>.*?):(?<currentValue>.*?)(@(?<currentDigest>sha256:[a-f0-9]{64}))?[\"']?\\s"
+      ],
+      "versioningTemplate": "docker"
     }
   ],
   "packageRules": [
@@ -22,16 +32,6 @@
       "matchPackageNames": ["dagger/dagger", "ghcr.io/dagger/**"],
       "groupName": "all dagger dependencies",
       "semanticCommitType": "fix"
-    },
-    {
-      "description": "Update `*_IMAGE_REF` constants in Python and Golang files",
-      "customType": "regex",
-      "datasourceTemplate": "docker",
-      "matchFileNames": ["**/*.py", "**/*.go"],
-      "matchStrings": [
-        "[A-Za-z0-9_]+?_IMAGE_REF\\s*=\\s*[\"'](?<depName>.*?):(?<currentValue>.*?)(@(?<currentDigest>sha256:[a-f0-9]{64}))?[\"']?\\s"
-      ],
-      "versioningTemplate": "docker"
     },
     {
       "description": "Group all kas dependencies together",
