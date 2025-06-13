@@ -8,7 +8,7 @@ from typing import Annotated, Self
 import dagger
 from dagger import Doc, Name, dag, field, function, object_type
 
-DEFAULT_BASE_IMAGE_REF = "ghcr.io/siemens/kas/kas:4.7"
+DEFAULT_BASE_IMAGE_REF = "ghcr.io/siemens/kas/kas:4.8"
 
 KAS_WORK_DIR = "/workdir"
 KAS_REPO_REF_DIR = "/repos"
