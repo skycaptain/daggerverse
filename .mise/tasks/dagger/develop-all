@@ -1,0 +1,16 @@
+#!/bin/sh
+# Skycaptain: Daggerverse
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#MISE description="Run dagger-develop on all modules"
+#
+
+# Run dagger develop on all modules
+find "${MISE_PROJECT_ROOT}" -name "dagger.json" | while read -r f; do
+    if echo "$f" | grep -q "/sdk/runtime/dagger.json$"; then
+        continue
+    fi
+
+    dagger develop -m "$(dirname "$f")"
+done

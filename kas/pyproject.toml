@@ -2,19 +2,15 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
+[project]
+name = "daggerverse-kas"
+version = "0.0.0"
+requires-python = ">=3.12"
+dependencies = ["dagger-io"]
+
+[tool.uv.sources]
+dagger-io = { path = "sdk", editable = true }
+
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry]
-name = "main"
-version = "1.0.0"
-description = ""
-authors = []
-license = "BSD-3-Clause"
-
-[tool.poetry.dependencies]
-python = "^3.10"  # dagger-io requires at least Python 3.10
-
-[tool.poetry.group.dev.dependencies]
-dagger-io = {path = "sdk", develop = true}
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"

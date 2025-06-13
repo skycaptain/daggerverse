@@ -1,0 +1,11 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [":enablePreCommit"],
+  "packageRules": [
+    {
+      "description": "Group all pre-commit hooks together",
+      "groupName": "pre-commit hooks",
+      "matchFileNames": [".pre-commit-config.yaml"]
+    }
+  ]
+}

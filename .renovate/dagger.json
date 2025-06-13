@@ -1,0 +1,27 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "customManagers": [
+    {
+      "description": "Update `engineVersion` fields in dagger.json files",
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "ghcr.io/dagger/engine",
+      "managerFilePatterns": ["/dagger\\.json$/"],
+      "matchStrings": ["\\s*[\"']engineVersion[\"']:\\s*[\"'](?<currentValue>.*)[\"'],?\\s"]
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Skip uv lockfile maintanace in .dagger directory",
+      "matchManagers": ["pep621"],
+      "matchFileNames": ["**/kas/**"],
+      "lockFileMaintenance": { "enabled": false }
+    },
+    {
+      "description": "Group all dagger dependencies",
+      "matchPackageNames": ["dagger/dagger", "ghcr.io/dagger/**"],
+      "groupName": "all dagger dependencies",
+      "semanticCommitType": "fix"
+    }
+  ]
+}

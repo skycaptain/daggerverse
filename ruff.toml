@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 line-length = 100
-target-version = "py310"  # dagger-io requires at least Python 3.10
+target-version = "py312"
 
 [format]
 quote-style = "preserve"

@@ -1,6 +1,7 @@
 {
   "name": "kas",
-  "sdk": "python",
-  "source": ".",
-  "engineVersion": "v0.11.3"
+  "engineVersion": "v0.18.10",
+  "sdk": {
+    "source": "python"
+  }
 }
