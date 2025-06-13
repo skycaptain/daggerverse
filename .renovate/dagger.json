@@ -22,6 +22,40 @@
       "matchPackageNames": ["dagger/dagger", "ghcr.io/dagger/**"],
       "groupName": "all dagger dependencies",
       "semanticCommitType": "fix"
+    },
+    {
+      "description": "Update `*_IMAGE_REF` constants in Python and Golang files",
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "managerFilePatterns": ["/.+\\.py$/", "/.+\\.go$/"],
+      "matchStrings": [
+        "[A-Za-z0-9_]+?_IMAGE_REF\\s*=\\s*[\"'](?<depName>.*?):(?<currentValue>.*?)(@(?<currentDigest>sha256:[a-f0-9]{64}))?[\"']?\\s"
+      ],
+      "versioningTemplate": "docker"
+    },
+    {
+      "description": "Group all kas dependencies together",
+      "matchPackageNames": ["ghcr.io/siemens/kas/kas", "kas"],
+      "groupName": "kas"
+    },
+    {
+      "description": "Trigger breaking release for major updates of module dependencies",
+      "matchPackageNames": ["ghcr.io/siemens/kas/kas", "kas"],
+      "matchUpdateTypes": ["major"],
+      "semanticCommitType": "feat",
+      "commitBody": "BREAKING CHANGE: major update of {{packageName}}"
+    },
+    {
+      "description": "Trigger feature release for minor updates of module dependencies",
+      "matchPackageNames": ["ghcr.io/siemens/kas/kas", "kas"],
+      "matchUpdateTypes": ["minor"],
+      "semanticCommitType": "feat"
+    },
+    {
+      "description": "Trigger fix release for patch updates of module dependencies",
+      "matchPackageNames": ["ghcr.io/siemens/kas/kas", "kas"],
+      "matchUpdateTypes": ["patch", "digest"],
+      "semanticCommitType": "fix"
     }
   ]
 }
