@@ -3,9 +3,10 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-#MISE description="Run dagger-develop on all modules"
+#MISE description="Run tests on all modules"
 #
 find "${MISE_PROJECT_ROOT}" -name "dagger.json" \
     ! -path "*/sdk/runtime/*" \
     ! -path "*/.renovate/*" \
-    -exec sh -c 'dagger develop -m "$(dirname "$1")"' _ {} \;
+    ! -path "*/tests/*" \
+    -exec sh -c 'dagger call -m "$(dirname "$1")/tests" all' _ {} \;

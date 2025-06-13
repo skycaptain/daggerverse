@@ -22,31 +22,31 @@ DOWNLOADS_CACHE_KEY = "downloads-cache"
 SSTATE_CACHE_KEY = "sstate-cache"
 REPO_REF_CACHE_KEY = "repo-ref-cache"
 
-CommandArg = Annotated[str, Doc("Run command")]
-OptionalConfigArg = Annotated[list[str] | None, Name("config"), Doc("Config file(s)")]
-OptionalExtraBitbakeArgsArg = Annotated[list[str] | None, Doc("Extra arguments to pass to bitbake")]
-ForceCheckoutArg = Annotated[
-    bool,
-    Doc(
-        "Always checkout the desired commit/branch/tag of each repository, discarding any "
-        "local changes"
-    ),
-]
-FormatArg = Annotated[str, Name("format"), Doc("Output format. Possible choices: yaml, json")]
-KeepConfigUnchangedArg = Annotated[bool, Doc("Skip steps that change the configuration")]
-LockArg = Annotated[bool, Doc("Create lockfile with exact SHAs")]
-PreserveEnvArg = Annotated[bool, Doc("Keep current user environment block")]
-ResolveEnvArg = Annotated[bool, Doc("Set env defaults to captured env value")]
-ResolveLocalArg = Annotated[bool, Doc("Add tracking information of root repo")]
-ResolveRefsArg = Annotated[bool, Doc("Replace floating refs with exact SHAs")]
-OptionalTargetArg = Annotated[str | None, Doc("Target to built")]
-OptionalTaskArg = Annotated[str | None, Doc("Task to run")]
-UpdateArg = Annotated[bool, Doc("Pull upstream changes to the branch even if already checked out")]
-
 DUMP_STDOUT_FILEPATH = "/tmp/.daggerverse-kas-dump-stdout"
 LOCK_STDOUT_FILEPATH = "/tmp/.daggerverse-kas-lock-stdout"
 
 GITCONFIG_FILE = "/tmp/.daggerverse-kas-gitconfig"
+
+CommandDoc = Doc("Command to run")
+ConfigDoc = Doc("Configuration file(s)")
+ExpandDoc = Doc("Expand environment variables in arguments")
+ExpectDoc = Doc("Expected return type")
+ExtraArgsDoc = Doc("Additional command arguments")
+ExtraBitbakeArgsDoc = Doc("Extra arguments to pass to bitbake")
+ExtraEnvVariablesDoc = Doc("Additional environment variables (KEY=VALUE format)")
+ForceCheckoutDoc = Doc("Always checkout desired commit/branch/tag, discarding local changes")
+FormatDoc = Doc("Output format (yaml or json)")
+KeepConfigUnchangedDoc = Doc("Skip steps that change the configuration")
+LockDoc = Doc("Create lockfile with exact SHAs")
+NetrcDoc = Doc("Netrc file for authentication")
+PreserveEnvDoc = Doc("Keep current user environment block")
+ResolveEnvDoc = Doc("Set environment defaults to captured environment values")
+ResolveLocalDoc = Doc("Add tracking information of root repository")
+ResolveRefsDoc = Doc("Replace floating refs with exact SHAs")
+SrcDoc = Doc("Source directory")
+TargetDoc = Doc("Target to build")
+TaskDoc = Doc("Task to run")
+UpdateDoc = Doc("Pull upstream changes to the branch even if already checked out")
 
 
 def format_config_arg(configs: list[str]) -> str:
@@ -55,12 +55,12 @@ def format_config_arg(configs: list[str]) -> str:
 
 @object_type
 class Kas:
-    base_image_ref: str = DEFAULT_BASE_IMAGE_REF
+    base_image_ref: Annotated[str, Doc("Base container image reference")] = DEFAULT_BASE_IMAGE_REF
 
-    ctr: dagger.Container = field(init=False)
-    src: dagger.Directory = field(default=dag.directory)
+    ctr: Annotated[dagger.Container, Doc("Container instance")] = field(init=False)
+    src: Annotated[dagger.Directory, SrcDoc] = field(default=dag.directory)
 
-    netrc: dagger.Secret | None = None
+    netrc: Annotated[dagger.Secret | None, NetrcDoc] = None
 
     def __post_init__(self):
         self.ctr = self._base()
@@ -72,7 +72,7 @@ class Kas:
         return self.ctr
 
     @function
-    def with_container(self, ctr: dagger.Container) -> Self:
+    def with_container(self, ctr: Annotated[dagger.Container, Doc("Container to use")]) -> Self:
         self.ctr = ctr
         return self
 
@@ -81,13 +81,13 @@ class Kas:
         return self.container().directory(KAS_WORK_DIR)
 
     @function
-    def with_source(self, path: dagger.Directory) -> Self:
-        self.src = path
+    def with_source(self, src: Annotated[dagger.Directory, SrcDoc]) -> Self:
+        self.src = src
         return self
 
     @function
-    def with_netrc(self, path: dagger.Secret) -> Self:
-        self.netrc = path
+    def with_netrc(self, netrc: Annotated[dagger.Secret, NetrcDoc]) -> Self:
+        self.netrc = netrc
         return self
 
     @function
@@ -97,7 +97,10 @@ class Kas:
     # Functions ------------------------------------------------------------------------------------
 
     @function
-    async def with_prepare(self, extra_env_variables: list[str] | None = None) -> Self:
+    async def with_prepare(
+        self,
+        extra_env_variables: Annotated[list[str] | None, ExtraEnvVariablesDoc] = None,
+    ) -> Self:
         ctr = self.container()
 
         # Query the current non-root user. This expects the container to have a non-root user
@@ -191,8 +194,8 @@ class Kas:
     @function
     async def prepare(
         self,
-        src: dagger.Directory,
-        extra_env_variables: list[str] | None = None,
+        src: Annotated[dagger.Directory, SrcDoc],
+        extra_env_variables: Annotated[list[str] | None, ExtraEnvVariablesDoc] = None,
     ) -> dagger.Container:
         ctr = (
             await self.with_container(self._base())
@@ -206,13 +209,13 @@ class Kas:
     @function
     def with_exec(
         self,
-        args: list[str],
+        args: Annotated[list[str], Doc("Command arguments to execute")],
         *,
-        redirect_stdout: str | None = "",
-        redirect_stderr: str | None = "",
-        expand: bool | None = False,
-        expect: dagger.ReturnType | None = dagger.ReturnType.SUCCESS,
-        use_entrypoint: bool = False,
+        redirect_stdout: Annotated[str | None, Doc("File path to redirect stdout")] = "",
+        redirect_stderr: Annotated[str | None, Doc("File path to redirect stderr")] = "",
+        expand: Annotated[bool | None, ExpandDoc] = False,
+        expect: Annotated[dagger.ReturnType | None, ExpectDoc] = dagger.ReturnType.SUCCESS,
+        use_entrypoint: Annotated[bool, Doc("Use container entrypoint")] = False,
     ) -> Self:
         ctr = self.container().with_exec(
             args,
@@ -228,14 +231,14 @@ class Kas:
     @function
     async def exec(
         self,
-        src: dagger.Directory,
-        args: list[str],
+        src: Annotated[dagger.Directory, SrcDoc],
+        args: Annotated[list[str], Doc("Command arguments to execute")],
         *,
-        redirect_stdout: str | None = "",
-        redirect_stderr: str | None = "",
-        expand: bool | None = False,
-        use_entrypoint: bool = False,
-        extra_env_variables: list[str] | None = None,
+        redirect_stdout: Annotated[str | None, Doc("File path to redirect stdout")] = "",
+        redirect_stderr: Annotated[str | None, Doc("File path to redirect stderr")] = "",
+        expand: Annotated[bool | None, ExpandDoc] = False,
+        use_entrypoint: Annotated[bool, Doc("Use container entrypoint")] = False,
+        extra_env_variables: Annotated[list[str] | None, ExtraEnvVariablesDoc] = None,
     ) -> str:
         await self.prepare(src=src, extra_env_variables=extra_env_variables)
 
@@ -250,7 +253,13 @@ class Kas:
         return await ctr.stdout()
 
     @function
-    def with_env_variable(self, key: str, value: str, *, expand: bool | None = False) -> Self:
+    def with_env_variable(
+        self,
+        key: str,
+        value: str,
+        *,
+        expand: Annotated[bool | None, ExpandDoc] = False,
+    ) -> Self:
         ctr = self.container().with_env_variable(key, value, expand=expand)
         return self.with_container(ctr)
 
@@ -261,12 +270,12 @@ class Kas:
     @function
     def with_kas(
         self,
-        args: list[str],
+        args: Annotated[list[str], Doc("Kas command arguments")],
         *,
-        redirect_stdout: str | None = "",
-        redirect_stderr: str | None = "",
-        expand: bool | None = False,
-        expect: dagger.ReturnType | None = dagger.ReturnType.SUCCESS,
+        redirect_stdout: Annotated[str | None, Doc("File path to redirect stdout")] = "",
+        redirect_stderr: Annotated[str | None, Doc("File path to redirect stderr")] = "",
+        expand: Annotated[bool | None, ExpandDoc] = False,
+        expect: Annotated[dagger.ReturnType | None, ExpectDoc] = dagger.ReturnType.SUCCESS,
     ) -> Self:
         return self.with_exec(
             args,
@@ -280,13 +289,13 @@ class Kas:
     @function
     async def kas(
         self,
-        src: dagger.Directory,
-        args: list[str],
+        src: Annotated[dagger.Directory, SrcDoc],
+        args: Annotated[list[str], Doc("Kas command arguments")],
         *,
-        redirect_stdout: str | None = "",
-        redirect_stderr: str | None = "",
-        expand: bool | None = False,
-        extra_env_variables: list[str] | None = None,
+        redirect_stdout: Annotated[str | None, Doc("File path to redirect stdout")] = "",
+        redirect_stderr: Annotated[str | None, Doc("File path to redirect stderr")] = "",
+        expand: Annotated[bool | None, ExpandDoc] = False,
+        extra_env_variables: Annotated[list[str] | None, ExtraEnvVariablesDoc] = None,
     ) -> str:
         await self.prepare(src=src, extra_env_variables=extra_env_variables)
 
@@ -302,10 +311,11 @@ class Kas:
     @function
     def with_checkout(
         self,
-        configs: OptionalConfigArg = None,
-        force_checkout: ForceCheckoutArg = False,
-        update: UpdateArg = False,
-        extra_args: list[str] | None = None,
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
+        *,
+        force_checkout: Annotated[bool, ForceCheckoutDoc] = False,
+        update: Annotated[bool, UpdateDoc] = False,
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
     ) -> Self:
         args = ["checkout"]
 
@@ -325,13 +335,13 @@ class Kas:
     @function
     async def checkout(
         self,
-        src: dagger.Directory,
-        configs: OptionalConfigArg,
+        src: Annotated[dagger.Directory, SrcDoc],
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
         *,
-        force_checkout: ForceCheckoutArg = False,
-        update: UpdateArg = False,
-        extra_args: list[str] | None = None,
-        extra_env_variables: list[str] | None = None,
+        force_checkout: Annotated[bool, ForceCheckoutDoc] = False,
+        update: Annotated[bool, UpdateDoc] = False,
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
+        extra_env_variables: Annotated[list[str] | None, ExtraEnvVariablesDoc] = None,
     ) -> dagger.Directory:
         await self.prepare(src=src, extra_env_variables=extra_env_variables)
 
@@ -347,14 +357,15 @@ class Kas:
     @function
     def with_dump(
         self,
-        configs: OptionalConfigArg,
-        force_checkout: ForceCheckoutArg = False,
-        update: UpdateArg = False,
-        format_: FormatArg = "yaml",
-        resolve_refs: ResolveRefsArg = False,
-        resolve_local: ResolveLocalArg = False,
-        resolve_env: ResolveEnvArg = False,
-        extra_args: list[str] | None = None,
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
+        *,
+        force_checkout: Annotated[bool, ForceCheckoutDoc] = False,
+        update: Annotated[bool, UpdateDoc] = False,
+        format_: Annotated[str, Name("format"), FormatDoc] = "yaml",
+        resolve_refs: Annotated[bool, ResolveRefsDoc] = False,
+        resolve_local: Annotated[bool, ResolveLocalDoc] = False,
+        resolve_env: Annotated[bool, ResolveEnvDoc] = False,
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
     ) -> "WithDumpResult":
         args = ["dump"]
 
@@ -387,17 +398,17 @@ class Kas:
     @function
     async def dump(
         self,
-        src: dagger.Directory,
-        configs: OptionalConfigArg,
+        src: Annotated[dagger.Directory, SrcDoc],
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
         *,
-        force_checkout: ForceCheckoutArg = False,
-        update: UpdateArg = False,
-        format_: FormatArg = "yaml",
-        resolve_refs: ResolveRefsArg = False,
-        resolve_local: ResolveLocalArg = False,
-        resolve_env: ResolveEnvArg = False,
-        extra_args: list[str] | None = None,
-        extra_env_variables: list[str] | None = None,
+        force_checkout: Annotated[bool, ForceCheckoutDoc] = False,
+        update: Annotated[bool, UpdateDoc] = False,
+        format_: Annotated[str, Name("format"), FormatDoc] = "yaml",
+        resolve_refs: Annotated[bool, ResolveRefsDoc] = False,
+        resolve_local: Annotated[bool, ResolveLocalDoc] = False,
+        resolve_env: Annotated[bool, ResolveEnvDoc] = False,
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
+        extra_env_variables: Annotated[list[str] | None, ExtraEnvVariablesDoc] = None,
         # Not implementing inplace as it does not make sense for a CLI function
     ) -> dagger.File:
         await self.prepare(src=src, extra_env_variables=extra_env_variables)
@@ -418,15 +429,16 @@ class Kas:
     @function
     def with_build(
         self,
-        configs: OptionalConfigArg,
-        extra_bitbake_args: OptionalExtraBitbakeArgsArg = None,
-        force_checkout: ForceCheckoutArg = False,
-        update: UpdateArg = False,
-        keep_config_unchanged: KeepConfigUnchangedArg = False,
-        target: OptionalTargetArg = None,
-        task: OptionalTaskArg = None,
-        extra_args: list[str] | None = None,
-        expect: dagger.ReturnType | None = dagger.ReturnType.SUCCESS,
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
+        *,
+        extra_bitbake_args: Annotated[list[str] | None, ExtraBitbakeArgsDoc] = None,
+        force_checkout: Annotated[bool, ForceCheckoutDoc] = False,
+        update: Annotated[bool, UpdateDoc] = False,
+        keep_config_unchanged: Annotated[bool, KeepConfigUnchangedDoc] = False,
+        target: Annotated[str | None, TargetDoc] = None,
+        task: Annotated[str | None, TaskDoc] = None,
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
+        expect: Annotated[dagger.ReturnType | None, ExpectDoc] = dagger.ReturnType.SUCCESS,
     ) -> Self:
         args = ["build"]
 
@@ -458,17 +470,17 @@ class Kas:
     @function
     async def build(
         self,
-        src: dagger.Directory,
-        configs: OptionalConfigArg,
+        src: Annotated[dagger.Directory, SrcDoc],
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
         *,
-        extra_bitbake_args: OptionalExtraBitbakeArgsArg = None,
-        force_checkout: ForceCheckoutArg = False,
-        update: UpdateArg = False,
-        keep_config_unchanged: KeepConfigUnchangedArg = False,
-        target: OptionalTargetArg = None,
-        task: OptionalTaskArg = "build",
-        extra_args: list[str] | None = None,
-        extra_env_variables: list[str] | None = None,
+        extra_bitbake_args: Annotated[list[str] | None, ExtraBitbakeArgsDoc] = None,
+        force_checkout: Annotated[bool, ForceCheckoutDoc] = False,
+        update: Annotated[bool, UpdateDoc] = False,
+        keep_config_unchanged: Annotated[bool, KeepConfigUnchangedDoc] = False,
+        target: Annotated[str | None, TargetDoc] = None,
+        task: Annotated[str | None, TaskDoc] = "build",
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
+        extra_env_variables: Annotated[list[str] | None, ExtraEnvVariablesDoc] = None,
     ) -> dagger.Directory:
         await self.prepare(src=src, extra_env_variables=extra_env_variables)
 
@@ -488,15 +500,16 @@ class Kas:
     @function
     def with_shell(
         self,
-        command: CommandArg,
-        configs: OptionalConfigArg,
-        force_checkout: ForceCheckoutArg = False,
-        update: UpdateArg = False,
-        preserve_env: PreserveEnvArg = False,
-        keep_config_unchanged: KeepConfigUnchangedArg = False,
-        extra_args: list[str] | None = None,
-        expand: bool | None = False,
-        expect: dagger.ReturnType | None = dagger.ReturnType.SUCCESS,
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
+        *,
+        command: Annotated[str, CommandDoc],
+        force_checkout: Annotated[bool, ForceCheckoutDoc] = False,
+        update: Annotated[bool, UpdateDoc] = False,
+        preserve_env: Annotated[bool, PreserveEnvDoc] = False,
+        keep_config_unchanged: Annotated[bool, KeepConfigUnchangedDoc] = False,
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
+        expand: Annotated[bool | None, ExpandDoc] = False,
+        expect: Annotated[dagger.ReturnType | None, ExpectDoc] = dagger.ReturnType.SUCCESS,
     ) -> Self:
         args = ["shell", "-c", command]
 
@@ -522,17 +535,17 @@ class Kas:
     @function
     async def shell(
         self,
-        src: dagger.Directory,
-        configs: OptionalConfigArg,
+        src: Annotated[dagger.Directory, SrcDoc],
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
         *,
-        command: CommandArg,
-        force_checkout: ForceCheckoutArg = False,
-        update: UpdateArg = False,
-        preserve_env: PreserveEnvArg = False,
-        keep_config_unchanged: KeepConfigUnchangedArg = False,
-        extra_args: list[str] | None = None,
-        expand: bool | None = False,
-        extra_env_variables: list[str] | None = None,
+        command: Annotated[str, CommandDoc],
+        force_checkout: Annotated[bool, ForceCheckoutDoc] = False,
+        update: Annotated[bool, UpdateDoc] = False,
+        preserve_env: Annotated[bool, PreserveEnvDoc] = False,
+        keep_config_unchanged: Annotated[bool, KeepConfigUnchangedDoc] = False,
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
+        expand: Annotated[bool | None, ExpandDoc] = False,
+        extra_env_variables: Annotated[list[str] | None, ExtraEnvVariablesDoc] = None,
     ) -> dagger.Container:
         await self.prepare(src=src, extra_env_variables=extra_env_variables)
 
@@ -552,11 +565,12 @@ class Kas:
     @function
     def with_for_all_repos(
         self,
-        configs: OptionalConfigArg,
-        command: CommandArg,
-        extra_args: list[str] | None = None,
-        expand: bool | None = False,
-        expect: dagger.ReturnType | None = dagger.ReturnType.SUCCESS,
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
+        *,
+        command: Annotated[str, CommandDoc],
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
+        expand: Annotated[bool | None, ExpandDoc] = False,
+        expect: Annotated[dagger.ReturnType | None, ExpectDoc] = dagger.ReturnType.SUCCESS,
     ) -> Self:
         args = ["for-all-repos", *(extra_args or [])]
 
@@ -570,13 +584,13 @@ class Kas:
     @function
     async def for_all_repos(
         self,
-        src: dagger.Directory,
-        configs: OptionalConfigArg,
+        src: Annotated[dagger.Directory, SrcDoc],
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
         *,
-        command: CommandArg,
-        extra_args: list[str] | None = None,
-        expand: bool | None = False,
-        extra_env_variables: list[str] | None = None,
+        command: Annotated[str, CommandDoc],
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
+        expand: Annotated[bool | None, ExpandDoc] = False,
+        extra_env_variables: Annotated[list[str] | None, ExtraEnvVariablesDoc] = None,
     ) -> dagger.Container:
         await self.prepare(src=src, extra_env_variables=extra_env_variables)
 
@@ -592,10 +606,11 @@ class Kas:
     @function
     def with_lock(
         self,
-        configs: OptionalConfigArg,
-        force_checkout: ForceCheckoutArg = False,
-        update: UpdateArg = False,
-        extra_args: list[str] | None = None,
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
+        *,
+        force_checkout: Annotated[bool, ForceCheckoutDoc] = False,
+        update: Annotated[bool, UpdateDoc] = False,
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
     ) -> "WithLockResult":
         args = ["lock"]
 
@@ -617,13 +632,13 @@ class Kas:
     @function
     async def lock(
         self,
-        src: dagger.Directory,
-        configs: OptionalConfigArg,
+        src: Annotated[dagger.Directory, SrcDoc],
+        configs: Annotated[list[str] | None, Name("config"), ConfigDoc] = None,
         *,
-        force_checkout: ForceCheckoutArg = False,
-        update: UpdateArg = False,
-        extra_args: list[str] | None = None,
-        extra_env_variables: list[str] | None = None,
+        force_checkout: Annotated[bool, ForceCheckoutDoc] = False,
+        update: Annotated[bool, UpdateDoc] = False,
+        extra_args: Annotated[list[str] | None, ExtraArgsDoc] = None,
+        extra_env_variables: Annotated[list[str] | None, ExtraEnvVariablesDoc] = None,
     ) -> dagger.File:
         await self.prepare(src=src, extra_env_variables=extra_env_variables)
 
@@ -649,11 +664,11 @@ class Kas:
 
 @object_type
 class WithDumpResult:
-    kas: Kas = field()
-    result: dagger.File = field()
+    kas: Annotated[Kas, Doc("Kas instance")] = field()
+    result: Annotated[dagger.File, Doc("Dump output file")] = field()
 
 
 @object_type
 class WithLockResult:
-    kas: Kas = field()
-    result: dagger.File = field()
+    kas: Annotated[Kas, Doc("Kas instance")] = field()
+    result: Annotated[dagger.File, Doc("Lock file output")] = field()
