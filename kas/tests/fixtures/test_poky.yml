@@ -20,5 +20,3 @@ repos:
     layers:
       meta:
       meta-poky:
-      meta-yocto-bsp:
-      meta-selftest:
