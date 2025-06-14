@@ -9,7 +9,7 @@ from dagger import dag, field, function, object_type
 
 # FIXME: Add Renovate configuration to lock and update the digests of the refs.
 # See https://github.com/renovatebot/renovate/issues/10993
-DEFAULT_BUILDER_IMAGE_REF = "python:3.12-bookworm"
+DEFAULT_BUILDER_IMAGE_REF = "python:3.13-bookworm"
 DEFAULT_BASE_IMAGE_REF = "mcr.microsoft.com/devcontainers/cpp:bookworm"
 
 SDK_INSTALL_DIR = "/sdk"
