@@ -1,0 +1,8 @@
+{
+  "$schema": "https://docs.dagger.io/reference/dagger.schema.json",
+  "name": "openembedded-sdk-builder",
+  "engineVersion": "v0.18.10",
+  "sdk": {
+    "source": "python"
+  }
+}

@@ -1,0 +1,16 @@
+# Skycaptain: Daggerverse
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+[project]
+name = "skycaptain-daggerverse-openembedded-sdk-builder"
+version = "0.0.0"
+requires-python = ">=3.12"
+dependencies = ["dagger-io"]
+
+[tool.uv.sources]
+dagger-io = { path = "sdk", editable = true }
+
+[build-system]
+requires = ["hatchling==1.25.0"]
+build-backend = "hatchling.build"
