@@ -81,13 +81,13 @@ class Kas:
         return self.container().directory(KAS_WORK_DIR)
 
     @function
-    def with_source(self, src: Annotated[dagger.Directory, SrcDoc]) -> Self:
-        self.src = src
+    def with_source(self, path: Annotated[dagger.Directory, SrcDoc]) -> Self:
+        self.src = path
         return self
 
     @function
-    def with_netrc(self, netrc: Annotated[dagger.Secret, NetrcDoc]) -> Self:
-        self.netrc = netrc
+    def with_netrc(self, path: Annotated[dagger.Secret, NetrcDoc]) -> Self:
+        self.netrc = path
         return self
 
     @function
