@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 [project]
-name = "daggerverse-kas"
+name = "skycaptain-daggerverse-kas"
 version = "0.0.0"
 requires-python = ">=3.12"
 dependencies = ["dagger-io"]
