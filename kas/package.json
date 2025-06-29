@@ -3,7 +3,7 @@
   "private": true,
   "devDependencies": {
     "conventional-changelog-conventionalcommits": "9.0.0",
-    "semantic-release": "24.2.5",
+    "semantic-release": "24.2.6",
     "semantic-release-monorepo": "8.0.2"
   }
 }
