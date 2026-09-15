@@ -29,6 +29,6 @@ jobs:
         uses: dagger/dagger-for-github@e47aba410ef9bb9ed81a4d2a97df31061e5e842e # 8.0.0
         with:
           # TODO: Add renovate configuration to update this version
-          version: "v0.18.10"
+          version: "0.21.9"
           module: "${{ matrix.module }}/tests"
           args: "all"
